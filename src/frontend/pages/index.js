@@ -1,10 +1,31 @@
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
 // host: products-api.default.svc.cluster.local
 // host: service-name.namespace name.svc.cluster-domain
 
-export default function Home() {
+// This gets called on every request
+export async function getServerSideProps() {
+  // Fetch data from external API
+  const res = await fetch(`${process.env.NEXT_PUBLIC_PRODUCT_API_HOST}/products`)
+  const data = await res.json()
+
+  // Pass data to the page via props
+  return { props: { products: data.products || [] } }
+}
+
+export default function Home({ products }) {
+  // const [products, setProducts] = useState([])
+
+  // useEffect(async ()=> {
+  //   ;(async function () {
+  //     const result = await fetch(`${process.env.NEXT_PUBLIC_PRODUCT_API_HOST}/products`)
+  //     const json = await result.json()
+  //     setProducts(json.products)
+  //   })()
+  // }, [])
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,6 +34,13 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
+        <h1>products list</h1>
+        {products.map(product => (
+          <div>
+            <p>id: {product.id}</p>
+            <p>name: {product.name}</p>
+          </div>
+        ))}
         <h1 className={styles.title}>
           Welcome to <a href="https://nextjs.org">Next.js</a> on Docker!
         </h1>
