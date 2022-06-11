@@ -12,7 +12,7 @@ import styles from '../styles/Home.module.css'
 //   return { props: { products: data.products || [] } }
 // }
 
-export default function Home({ products }) {
+export default function Home() {
   const [products, setProducts] = useState([])
 
   useEffect(async ()=> {
