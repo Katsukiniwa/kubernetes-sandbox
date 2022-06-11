@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: products-api
+  labels:
+    app.kubernetes.io/instance: products
+    app.kubernetes.io/version: "1.0.0"
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: products-api
+    # app.kubernetes.io/name: products-api
+    # app.kubernetes.io/instance: products
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-api-external
+spec:
+  type: LoadBalancer
+  selector:
+    app: products-api
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-api
+  labels:
+    app: products-api
+    # app.kubernetes.io/instance: products
+    # app.kubernetes.io/version: "1.0.0"
+    # app.kubernetes.io/component: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products-api
+      # app.kubernetes.io/name: products-api
+      # app.kubernetes.io/instance: products
+  template:
+    metadata:
+      labels:
+        app: products-api
+        # app.kubernetes.io/name: products-api
+        # app.kubernetes.io/instance: products
+        # app.kubernetes.io/component: api
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: api
+          image: gcr.io/kubernetes-sandbox-352911/product-service
+          imagePullPolicy: Always
+          # env:
+          #   - name: PORT
+          #     value: "8080"
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+            # - name: http
+            #   containerPort: 8080
+            #   protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 10
+            httpGet:
+              path: "/api/health"
+              port: 8080
+          readinessProbe:
+            initialDelaySeconds: 10
+            httpGet:
+              path: "/api/health"
+              port: 8080
+          resources:
+            limits:
+              cpu: 250m
+              memory: 128Mi
