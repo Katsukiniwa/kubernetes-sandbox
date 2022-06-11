@@ -11,6 +11,12 @@ app.get('/', async (_req: Request, res: Response) => {
   })
 })
 
+app.get('/api/health', async (_req: Request, res: Response) => {
+  return res.status(200).send({
+    message: 'ready!',
+  })
+})
+
 try {
   app.listen(process.env.PORT, () => {
     console.log(`dev server running at: http://localhost:${process.env.PORT}/`)
