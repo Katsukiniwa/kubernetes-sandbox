@@ -8,7 +8,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: http
+    - name: cluster-http
       port: 80
       targetPort: 8080
       protocol: TCP
@@ -25,8 +25,10 @@ spec:
   type: LoadBalancer
   selector:
     app: products-api
+    # app.kubernetes.io/name: products-api
+    # app.kubernetes.io/instance: products
   ports:
-  - name: http
+  - name: load-balancer-http
     port: 80
     targetPort: 8080
 ---

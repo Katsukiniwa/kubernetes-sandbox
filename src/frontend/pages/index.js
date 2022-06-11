@@ -1,6 +1,9 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 
+// host: products-api.default.svc.cluster.local
+// host: service-name.namespace name.svc.cluster-domain
+
 export default function Home() {
   return (
     <div className={styles.container}>
