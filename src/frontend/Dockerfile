@@ -26,6 +26,9 @@ RUN npm run build
 FROM node:16-alpine AS runner
 WORKDIR /app
 
+RUN apk update
+RUN apk add curl
+
 ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 # ENV NEXT_TELEMETRY_DISABLED 1
