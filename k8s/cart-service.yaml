@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-api
+  labels:
+    app.kubernetes.io/instance: cart
+    app.kubernetes.io/version: "1.0.0"
+spec:
+  type: ClusterIP
+  ports:
+    - name: cluster-http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: cart-api
+    # app.kubernetes.io/name: cart-api
+    # app.kubernetes.io/instance: cart
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-api-external
+spec:
+  type: LoadBalancer
+  selector:
+    app: cart-api
+    # app.kubernetes.io/name: cart-api
+    # app.kubernetes.io/instance: cart
+  ports:
+  - name: load-balancer-http
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-api
+  labels:
+    app: cart-api
+    # app.kubernetes.io/instance: cart
+    # app.kubernetes.io/version: "1.0.0"
+    # app.kubernetes.io/component: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart-api
+      # app.kubernetes.io/name: cart-api
+      # app.kubernetes.io/instance: cart
+  template:
+    metadata:
+      labels:
+        app: cart-api
+        # app.kubernetes.io/name: cart-api
+        # app.kubernetes.io/instance: cart
+        # app.kubernetes.io/component: api
+    spec:
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: api
+          image: gcr.io/kubernetes-sandbox-352911/cart-service
+          imagePullPolicy: Always
+          env:
+            - name: PRODUCT_SERVICE_HOST
+              value: "http://products-api:8080"
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+            # - name: http
+            #   containerPort: 8080
+            #   protocol: TCP
+          livenessProbe:
+            initialDelaySeconds: 10
+            httpGet:
+              path: "/api/health"
+              port: 8080
+          readinessProbe:
+            initialDelaySeconds: 10
+            httpGet:
+              path: "/api/health"
+              port: 8080
+          resources:
+            limits:
+              cpu: 250m
+              memory: 128Mi
