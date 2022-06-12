@@ -1,0 +1,32 @@
+version: "3"
+services:
+  app:
+    container_name: app
+    image: app:1.0.0
+    stdin_open: true
+    tty: true
+    restart: always
+    build:
+      context: .
+    environment:
+      PORT: 8080
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    # command: npm run dev
+
+  # nginx:
+  #   container_name: nginx
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/nginx/Dockerfile
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - sockets:/app/tmp/sockets
+  #   depends_on:
+  #     - app
+
+volumes:
+  sockets:
